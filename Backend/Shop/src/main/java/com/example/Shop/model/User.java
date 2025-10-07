@@ -1,0 +1,36 @@
+package com.example.Shop.model;
+
+import java.util.Objects;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@SuperBuilder//da bi klase ispod znale kako da naprave builder
+@MappedSuperclass//da bi klase ispod znale koja polja ima, nemam entity ovde pa da se ne cuva uopste u bazi
+@AllArgsConstructor
+@NoArgsConstructor
+public class User implements GenericEntity{
+
+	@Id
+	private String username;
+	private String password;
+	private String name;//novo
+	private String city;//novo
+	private String phone_number;//novo
+	
+	@Transient               // Ne čuva se u bazi
+    private String token; 
+
+	
+
+}

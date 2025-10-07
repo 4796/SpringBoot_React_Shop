@@ -1,0 +1,46 @@
+package com.example.Shop.model;
+
+import java.util.List;
+import java.util.Objects;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Client extends User {
+	//sva tri nova
+	private String country;
+	private String postal_code;
+	private Currency currency;
+	@ManyToMany//kreira se refenca u bazi a podrazumevano je da se kreira nova tabela jer je many to many
+	List<Product> productsInCart;
+	
+	
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		User other = (User) obj;
+		return Objects.equals(this.getPassword(), other.getPassword()) && Objects.equals(getUsername(), other.getUsername());
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(getPassword(), getUsername());
+	}
+	@Override
+	public String toString() {
+		return "Client [country=" + country + ", postal_code=" + postal_code + ", currency=" + currency
+				+ ", productsInCart=" + productsInCart + ", getUsername()=" + getUsername() + ", getPassword()="
+				+ getPassword() + ", getName()=" + getName() + ", getCity()=" + getCity() + ", getPhone_number()="
+				+ getPhone_number() + ", getToken()=" + getToken() + ", toString()=" + super.toString()
+				+ ", getClass()=" + getClass() + "]";
+	}
+}

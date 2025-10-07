@@ -1,0 +1,5 @@
+package com.example.Shop.model;
+
+public interface GenericEntity {
+
+}

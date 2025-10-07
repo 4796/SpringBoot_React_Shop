@@ -1,0 +1,54 @@
+package com.example.Shop.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.Shop.db.OrderRepo;
+import com.example.Shop.db.ProductRepo;
+import com.example.Shop.model.Client;
+import com.example.Shop.model.Order;
+import com.example.Shop.model.Product;
+
+import jakarta.transaction.Transactional;
+
+
+@Service
+public class OrderService {
+
+	@Autowired
+	private OrderRepo orderRepo;
+	
+	@Autowired
+	private ProductRepo productRep
+	
+	@Transactional
+	public Order buy(Order order) {
+		try {
+			
+			Product p= productRepo.findById(order.getProduct().getId()).orElseThrow();
+			if(!p.isAveilable())
+				return null;
+			p.setQuantity(p.getQuantity()-1);
+			if(p.getQuantity()==0)
+				p.setAveilable(false);
+			productRepo.save(p);
+			Client c=order.getClient();
+			c=clientRepo.findById(c.getUsername()).orElseThrow();
+			List<Product> l = c.getProductsInCart();
+			l.remove(p);
+			c.setProductsInCart(l);
+			clientRepo.save(c);
+			Order o=orderRepo.save(order);
+			o.getClient().setProductsInCart(l);
+			return o;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+	}
+
+}
