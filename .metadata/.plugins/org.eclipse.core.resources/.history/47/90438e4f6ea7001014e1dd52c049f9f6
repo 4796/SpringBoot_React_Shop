@@ -1,0 +1,5 @@
+package com.example.Shop.exHandler;
+
+public class ValidationExceptionHandler {
+
+}

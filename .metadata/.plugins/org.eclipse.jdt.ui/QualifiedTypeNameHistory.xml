@@ -1,2 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.example.Shop.model.Currency"/>
+    <fullyQualifiedTypeName name="com.example.Shop.service.OrderService"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.MappedSuperclass"/>
+    <fullyQualifiedTypeName name="java.io.Serializable"/>
+    <fullyQualifiedTypeName name="org.antlr.v4.runtime.misc.NotNull"/>
+    <fullyQualifiedTypeName name="jakarta.validation.constraints.NotNull"/>
+    <fullyQualifiedTypeName name="jakarta.validation.constraints.Size"/>
+    <fullyQualifiedTypeName name="jakarta.persistence.PrePersist"/>
+    <fullyQualifiedTypeName name="com.example.Shop.model.GenericEntity"/>
+    <fullyQualifiedTypeName name="DTO"/>
+    <fullyQualifiedTypeName name="java.util.Date"/>
+    <fullyQualifiedTypeName name="com.example.Shop.model.Client"/>
+    <fullyQualifiedTypeName name="com.example.Shop.model.Worker"/>
+    <fullyQualifiedTypeName name="lombok.AllArgsConstructor"/>
+    <fullyQualifiedTypeName name="com.example.Shop.model.Product"/>
+    <fullyQualifiedTypeName name="com.example.Shop.converter.ConverterDtoEntity"/>
+    <fullyQualifiedTypeName name="lombok.NoArgsConstructor"/>
+    <fullyQualifiedTypeName name="com.example.Shop.model.Order"/>
+    <fullyQualifiedTypeName name="jakarta.validation.Valid"/>
+    <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+    <fullyQualifiedTypeName name="com.example.Shop.model.User"/>
+    <fullyQualifiedTypeName name="lombok.Data"/>
+    <fullyQualifiedTypeName name="com.example.Shop.dto.UserDTO"/>
+    <fullyQualifiedTypeName name="com.example.Shop.converter.impl.UserConverterDtoEntity"/>
+    <fullyQualifiedTypeName name="com.example.Shop.converter.impl.WorkerConverterDtoEntity"/>
+    <fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.RestControllerAdvice"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.ExceptionHandler"/>
+    <fullyQualifiedTypeName name="org.springframework.web.bind.MethodArgumentNotValidException"/>
+    <fullyQualifiedTypeName name="org.springframework.http.ResponseEntity"/>
+    <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
+    <fullyQualifiedTypeName name="org.springframework.validation.FieldError"/>
+    <fullyQualifiedTypeName name="com.example.Shop.dto.DTO"/>
+    <fullyQualifiedTypeName name="jakarta.validation.constraints.Pattern"/>
+    <fullyQualifiedTypeName name="com.example.Shop.dto.WorkerDTO"/>
+    <fullyQualifiedTypeName name="com.example.Shop.converter.impl.ProductConverterDtoEntity"/>
+    <fullyQualifiedTypeName name="com.example.Shop.dto.ProductDTO"/>
+    <fullyQualifiedTypeName name="java.time.LocalDate"/>
+    <fullyQualifiedTypeName name="com.example.Shop.dto.ClientDTO"/>
+    <fullyQualifiedTypeName name="com.example.Shop.converter.impl.ClientConverterDtoEntity"/>
+    <fullyQualifiedTypeName name="com.example.Shop.converter.impl.OrderConverterDtoEntity"/>
+    <fullyQualifiedTypeName name="com.example.Shop.dto.OrderDTO"/>
+    <fullyQualifiedTypeName name="java.lang.Exception"/>
+</qualifiedTypeNameHistroy>

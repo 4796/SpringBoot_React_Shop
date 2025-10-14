@@ -89,8 +89,8 @@ export default function ProductsPage() {
             </div>
             <p className="text-sm text-gray-500">Brand: {product.brand}</p>
             <p className="text-sm text-gray-500">Category: {product.category}</p>
-            <p className={`text-sm ${product.aveilable ? "text-green-600" : "text-red-600"}`}>
-              {product.aveilable ? "Available" : "Out of Stock"}
+            <p className={`text-sm ${product.available ? "text-green-600" : "text-red-600"}`}>
+              {product.available ? "Available" : "Out of Stock"}
             </p>
             <p className="text-gray-600 mt-1">${product.price}</p>
             <button onClick={() => handleAddToCart(product.id)} className="mt-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">

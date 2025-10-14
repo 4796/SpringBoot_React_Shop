@@ -1,0 +1,153 @@
+package com.example.Shop.service;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.example.Shop.db.ClientRepo;
+import com.example.Shop.db.OrderRepo;
+import com.example.Shop.db.ProductRepo;
+import com.example.Shop.db.WorkerRepo;
+import com.example.Shop.model.Client;
+import com.example.Shop.model.Order;
+import com.example.Shop.model.Product;
+import com.example.Shop.model.User;
+import com.example.Shop.model.Worker;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class UserService {
+	@Autowired
+	private WorkerRepo workerRepo;
+	
+	@Autowired
+	private ClientRepo clientRepo;
+	
+	
+	@Autowired
+	private ProductRepo productRepo;
+
+	public User logIn(User u) throws Exception {
+		
+		User found=null;
+		try {
+			List<Client> l1 = clientRepo.findAll();
+			
+			for(Client c : l1) {
+				if(c.equals(u)) {
+					found=c;
+					break;
+				}
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(found!=null)
+			return found;
+		
+			try {
+
+					List<Worker> l2 = workerRepo.findAll();
+					for(Worker w : l2) {
+						if(w.equals(u)) {
+							found=w;
+							break;
+						}
+					}
+					
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+		
+		
+		
+		if(found==null)
+			throw new Exception("Wrong input for username and password.");
+		return found;
+	}
+
+	@Transactional
+	public Client register(Client client) throws Exception {
+		if (clientRepo.existsById(client.getUsername()) || workerRepo.existsById(client.getUsername()))
+			throw new Exception("Username taken");
+		return clientRepo.save(client);
+	}
+
+	//in_cart nije entitet za sebe nego je vezan za kupca
+	@Transactional
+	public Client addToCart(int id, String username) {
+		try {
+			//provera da li postoje i proizvod i kupac
+			Product p=productRepo.findById(id).orElseThrow();
+			client=clientRepo.findById(getUsername().orElseThrow();
+			
+			client.getProductsInCart().add(p);
+			Client c=clientRepo.save(client);
+			return c;
+		} catch (Exception e) {
+			return null;
+		}
+		
+		
+	}
+
+	
+	@Transactional
+	public Worker addWorker(Worker worker) throws Exception {
+		try {
+			User w=workerRepo.findById(worker.getUsername()).orElse(null);
+			Client c=null;
+			if(w==null)
+				c=clientRepo.findById(worker.getUsername()).orElse(null);
+			if(w!=null || c!=null) { //vec postoji
+				throw new Exception("username taken");
+			}
+			return workerRepo.save(worker);
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+		
+	}
+
+	@Transactional
+	public Worker updateWorker(Worker worker) throws Exception {
+		try {
+			if(worker.getPassword()==null || worker.getPassword().length()<1)
+				worker.setPassword(workerRepo.findById(worker.getUsername()).get().getPassword());
+			return workerRepo.save(worker);
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
+	}
+
+	@Transactional
+	public String deleteWorker(String worker) {
+		try {
+			workerRepo.deleteById(worker);
+			return worker;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public List<Worker> workerList() {
+		try {
+			return workerRepo.findAll();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
+	
+	
+	
+}

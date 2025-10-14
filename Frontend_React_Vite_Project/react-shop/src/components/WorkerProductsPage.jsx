@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
-    aveilable: true,
+    available: true,
     brand: '',
     category: '',
     description: '',
@@ -12,6 +12,9 @@ const ProductsPage = () => {
     price: '',
     quantity: ''
   });
+  const [error, setError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [updateError, setUpdateError] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -29,6 +32,8 @@ const ProductsPage = () => {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    setError('');
+    
     try {
       const token = sessionStorage.getItem('token');
       const response = await fetch('http://localhost:8080/api/products', {
@@ -37,16 +42,14 @@ const ProductsPage = () => {
           'Content-Type': 'application/json',
           'Authorization': token
         },
-        body: JSON.stringify({
-            worker:  sessionStorage.getItem("username"),
-            product: newProduct
-        })
+        body: JSON.stringify(newProduct)
+        
       });
 
       if (response.ok) {
         fetchProducts();
         setNewProduct({
-          aveilable: true,
+          available: true,
           brand: '',
           category: '',
           description: '',
@@ -55,13 +58,19 @@ const ProductsPage = () => {
           price: '',
           quantity: ''
         });
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Failed to add product. Please try again.');
       }
     } catch (error) {
       console.error('Error adding product:', error);
+      setError('Failed to add product. Please try again.');
     }
   };
 
   const handleDeleteProduct = async (id) => {
+    setDeleteError('');
+    
     try {
       const token = sessionStorage.getItem('token');
       const response = await fetch(`http://localhost:8080/api/products/${id}`, {
@@ -77,14 +86,20 @@ const ProductsPage = () => {
 
       if (response.ok) {
         fetchProducts();
-        alert("Succesfully deleted product");
+        alert("Successfully deleted product");
+      } else {
+        const errorData = await response.json();
+        setDeleteError(errorData.message || 'Failed to delete product. Please try again.');
       }
     } catch (error) {
       console.error('Error deleting product:', error);
+      setDeleteError('Failed to delete product. Please try again.');
     }
   };
 
   const handleUpdateProduct = async (id, updatedProduct) => {
+    setUpdateError('');
+    
     try {
       const token = sessionStorage.getItem('token');
       const response = await fetch(`http://localhost:8080/api/products/${id}`, {
@@ -93,17 +108,19 @@ const ProductsPage = () => {
           'Content-Type': 'application/json',
           'Authorization': token
         },
-        body: JSON.stringify({
-            worker: {username: sessionStorage.getItem("username")},
-            product: updatedProduct
-        })
+        body: JSON.stringify(updatedProduct)
       });
 
       if (response.ok) {
         fetchProducts();
+        alert("Successfully updated product");
+      } else {
+        const errorData = await response.json();
+        setUpdateError(errorData.message || 'Failed to update product. Please try again.');
       }
     } catch (error) {
       console.error('Error updating product:', error);
+      setUpdateError('Failed to update product. Please try again.');
     }
   };
 
@@ -111,14 +128,39 @@ const ProductsPage = () => {
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
-    maxWidth: '500px',
-    margin: '0 auto 30px'
+    maxWidth: '600px',
+    margin: '0 auto 30px',
+    padding: '20px',
+    border: '1px solid #ddd',
+    borderRadius: '8px'
+  };
+
+  const formRowStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
+  };
+
+  const labelStyle = {
+    width: '150px',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: 'white'
   };
 
   const inputStyle = {
+    flex: '1',
     padding: '8px',
     border: '1px solid #ddd',
-    borderRadius: '4px'
+    borderRadius: '4px',
+    fontSize: '16px'
+  };
+
+  const errorStyle = {
+    color: '#ef4444',
+    textAlign: 'center',
+    marginBottom: '10px',
+    fontSize: '14px'
   };
 
   const productsListStyle = {
@@ -142,65 +184,113 @@ const ProductsPage = () => {
 
   return (
     <div style={{ padding: '20px' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Add New Product</h2>
+      {error && <p style={errorStyle}>{error}</p>}
       <form onSubmit={handleAddProduct} style={formStyle}>
-        <input
-          style={inputStyle}
-          type="text"
-          placeholder="Name"
-          value={newProduct.name}
-          onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-        />
-        <input
-          style={inputStyle}
-          type="text"
-          placeholder="Brand"
-          value={newProduct.brand}
-          onChange={(e) => setNewProduct({...newProduct, brand: e.target.value})}
-        />
-        <input
-          style={inputStyle}
-          type="text"
-          placeholder="Category"
-          value={newProduct.category}
-          onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-        />
-        <textarea
-          style={inputStyle}
-          placeholder="Description"
-          value={newProduct.description}
-          onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-        />
-        <input
-          style={inputStyle}
-          type="text"
-          placeholder="Image URL"
-          value={newProduct.image}
-          onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
-        />
-        <input
-          style={inputStyle}
-          type="number"
-          placeholder="Price"
-          value={newProduct.price}
-          onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-        />
-        <input
-          style={inputStyle}
-          type="number"
-          placeholder="Quantity"
-          value={newProduct.quantity}
-          onChange={(e) => setNewProduct({...newProduct, quantity: e.target.value})}
-        />
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Name:</label>
+          <input
+            style={inputStyle}
+            type="text"
+            placeholder="Name"
+            value={newProduct.name}
+            onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+            required
+          />
+        </div>
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Brand:</label>
+          <input
+            style={inputStyle}
+            type="text"
+            placeholder="Brand"
+            value={newProduct.brand}
+            onChange={(e) => setNewProduct({...newProduct, brand: e.target.value})}
+            required
+          />
+        </div>
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Category:</label>
+          <input
+            style={inputStyle}
+            type="text"
+            placeholder="Category"
+            value={newProduct.category}
+            onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+            required
+          />
+        </div>
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Description:</label>
+          <textarea
+            style={inputStyle}
+            placeholder="Description"
+            value={newProduct.description}
+            onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+            required
+          />
+        </div>
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Image URL:</label>
+          <input
+            style={inputStyle}
+            type="text"
+            placeholder="Image URL"
+            value={newProduct.image}
+            onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
+            required
+          />
+        </div>
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Price:</label>
+          <input
+            style={inputStyle}
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="Price"
+            value={newProduct.price}
+            onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+            onKeyDown={(e) => {
+              if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+                e.preventDefault();
+              }
+            }}
+            required
+          />
+        </div>
+        <div style={formRowStyle}>
+          <label style={labelStyle}>Quantity:</label>
+          <input
+            style={inputStyle}
+            type="number"
+            min="0"
+            placeholder="Quantity"
+            value={newProduct.quantity}
+            onChange={(e) => setNewProduct({...newProduct, quantity: e.target.value})}
+            onKeyDown={(e) => {
+              if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-' || e.key === '.') {
+                e.preventDefault();
+              }
+            }}
+            required
+          />
+        </div>
         <button type="submit" style={{
           padding: '10px',
           backgroundColor: '#4CAF50',
           color: 'white',
           border: 'none',
           borderRadius: '4px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          fontSize: '16px',
+          marginTop: '10px'
         }}>Add Product</button>
       </form>
 
+      <h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '40px' }}>Products List</h2>
+      {deleteError && <p style={errorStyle}>{deleteError}</p>}
+      {updateError && <p style={errorStyle}>{updateError}</p>}
       <div style={productsListStyle}>
         {products.map((product) => (
           <div key={product.id} style={productCardStyle}>
@@ -211,7 +301,7 @@ const ProductsPage = () => {
             <p>Category: {product.category}</p>
             <p>Price: ${product.price}</p>
             <p>Quantity: {product.quantity}</p>
-            <p>Available: {product.aveilable ? 'Yes' : 'No'}</p>
+            <p>Available: {product.available ? 'Yes' : 'No'}</p>
             <button 
               onClick={() => handleDeleteProduct(product.id)}
               style={{
@@ -229,7 +319,6 @@ const ProductsPage = () => {
             <button 
               onClick={() => handleUpdateProduct(product.id, {
                 ...product,
-               // date: 
                 price: prompt('Enter new price:', product.price),
                 quantity: prompt('Enter new quantity:', product.quantity)
               })}

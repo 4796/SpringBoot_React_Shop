@@ -1,0 +1,109 @@
+package com.example.Shop.dto;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import com.example.Shop.model.Client;
+import com.example.Shop.model.Currency;
+import com.example.Shop.model.Product;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotNull;
+
+public class ProductDTO implements DTO{
+	
+
+	private int id;//nije obavezno, samo generise
+	@NotNull(message = "name required. ")
+	private String name;
+	@NotNull(message = "price required. ")
+	private double price;
+	@NotNull(message = "description required. ")
+	private String description;
+	@NotNull(message = "brand required. ")
+	private String brand;
+	@NotNull(message = "category required. ")
+	private String category;
+	
+	//@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate date;//samo se generise
+	
+	private boolean available;//samo generise
+	
+	@NotNull(message = "quantity required. ")
+	private int quantity; 
+	
+	@NotNull(message = "image required. ")
+	private String image;
+	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getBrand() {
+		return brand;
+	}
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	public LocalDate getDate() {
+		return date;
+	}
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+	public boolean isAvailable() {
+		return available;
+	}
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
+	public int getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	
+	
+}

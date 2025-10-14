@@ -15,6 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Shop.converter.impl.ClientConverterDtoEntity;
+import com.example.Shop.converter.impl.UserConverterDtoEntity;
+import com.example.Shop.converter.impl.WorkerConverterDtoEntity;
+import com.example.Shop.dto.ClientDTO;
+import com.example.Shop.dto.DTO;
+import com.example.Shop.dto.UserDTO;
+import com.example.Shop.dto.WorkerDTO;
 import com.example.Shop.model.Client;
 import com.example.Shop.model.Order;
 import com.example.Shop.model.Product;
@@ -23,6 +31,8 @@ import com.example.Shop.model.Worker;
 import com.example.Shop.service.AuthService;
 import com.example.Shop.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/login")
@@ -34,18 +44,43 @@ public class LoginController {
 	@Autowired
 	AuthService authService;
 	
+	@Autowired
+	ClientConverterDtoEntity clientConverter;
+	@Autowired
+	WorkerConverterDtoEntity workerConverter;
+	@Autowired
+	UserConverterDtoEntity userConverter;
+	
 	@PostMapping()
-	public ResponseEntity<User> login(@RequestBody User user){
-		User u=userService.logIn(user);
-		if(u==null)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else {
-			String token = authService.generateToken(user.getUsername());
+	public ResponseEntity<DTO> login(@Valid @RequestBody UserDTO dto) throws Exception {
+		User u=userConverter.toEntity(dto);
+		u=userService.logIn(u);
+			String token = authService.generateToken(u.getUsername());
 			u.setToken(token);
-			return  new ResponseEntity<>(u, HttpStatus.OK);
-		}
+			DTO responseDto;
+			try {
+				responseDto = clientConverter.toDto((Client)u);
+			} catch (Exception e) {
+				responseDto = workerConverter.toDto((Worker)u);
+			}
 			
+			return  new ResponseEntity<>(responseDto, HttpStatus.OK);
+		
 	}
+	
+	
+//	@PostMapping()
+//	public ResponseEntity<User> login(@RequestBody User user){
+//		User u=userService.logIn(user);
+//		if(u==null)
+//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//		else {
+//			String token = authService.generateToken(user.getUsername());
+//			u.setToken(token);
+//			return  new ResponseEntity<>(u, HttpStatus.OK);
+//		}
+//			
+//	}
 	
 	
 	

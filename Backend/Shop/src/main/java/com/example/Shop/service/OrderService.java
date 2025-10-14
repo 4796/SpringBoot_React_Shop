@@ -28,12 +28,12 @@ public class OrderService {
 	private ClientRepo clientRepo;
 	
 	@Transactional
-	public Order buy(Order order) {
+	public Order buy(Order order) throws Exception{
 		try {
 			
 			Product p= productRepo.findById(order.getProduct().getId()).orElseThrow();
 			if(!p.isAvailable())
-				return null;
+				throw new Exception("Product is not available");
 			p.setQuantity(p.getQuantity()-1);
 			if(p.getQuantity()==0)
 				p.setAvailable(false);
@@ -49,7 +49,7 @@ public class OrderService {
 			return o;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			throw e;
 		}
 		
 		

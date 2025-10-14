@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +16,16 @@ import lombok.NoArgsConstructor;
 public class Worker extends User {
 	double pay;
 	Date date_of_employment;//novo
+	//@PrePersist se izvršava pre nego što se objekat sačuva prvi put u bazu
 	
-	
+	 @PrePersist
+	    protected void onCreate() {
+	        if (date_of_employment == null) {
+	            date_of_employment = new Date();
+	        }
+	    }
+	 
+	 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

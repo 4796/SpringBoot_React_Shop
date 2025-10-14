@@ -17,12 +17,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Shop.converter.impl.ProductConverterDtoEntity;
+import com.example.Shop.converter.impl.WorkerConverterDtoEntity;
+import com.example.Shop.dto.ProductDTO;
+import com.example.Shop.dto.WorkerDTO;
 import com.example.Shop.model.Product;
 import com.example.Shop.model.Worker;
 import com.example.Shop.service.AuthService;
 import com.example.Shop.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin
@@ -36,6 +43,9 @@ public class ProductController {
 	@Autowired
 	AuthService authService;
 	
+	@Autowired
+	ProductConverterDtoEntity productConverter;
+	
 	
 	
 //	@GetMapping("/")
@@ -46,7 +56,7 @@ public class ProductController {
 	
 	//for anyone is allright
 	@GetMapping() 
-	public ResponseEntity<List<Product>> getAllProducts(){
+	public ResponseEntity<List<Product>> getAllProducts() throws Exception{
 		List<Product> l=service.getAllProducts();
 		if(l==null)
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,7 +66,7 @@ public class ProductController {
 	
 	//for anyone is alright
 	@GetMapping("/{id}") 
-	public ResponseEntity<Product> getProduct(@PathVariable int id){
+	public ResponseEntity<Product> getProduct(@PathVariable int id) throws Exception{
 		Product p=service.getProduct(id);
 		if (p==null)
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -66,75 +76,52 @@ public class ProductController {
 	
 	//worker     da
 	@PostMapping() 
-	public ResponseEntity<?> addProduct(@RequestBody Map<String, Object> mapa,  @RequestHeader("Authorization") String token){
+	public ResponseEntity<?> addProduct(@Valid @RequestBody ProductDTO dto,  @RequestHeader("Authorization") String token) throws Exception{
 		Product product=null;
-		String w =null; 
 		try {
-			w= mapa.get("worker").toString();
 			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(w)) {
+	        if (username == null) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
-	        ObjectMapper objectMapper = new ObjectMapper();
-	        product = objectMapper.convertValue(mapa.get("product"), Product.class);
-			//product= (Product) mapa.get("product");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
-		
+		product=productConverter.toEntity(dto);
 		
 		Product p=service.addProduct(product);
-		if(p==null)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return  new ResponseEntity<>(p, HttpStatus.CREATED);
+		ProductDTO retDto=productConverter.toDto(p);
+		return  new ResponseEntity<>(retDto, HttpStatus.CREATED);
 	}
 	
 	//worker     da
 	@PutMapping("/{id}") 
-	public ResponseEntity<?> updateProduct(@PathVariable int id, @RequestBody Map<Object, Object> mapa,  @RequestHeader("Authorization") String token){
-		System.out.println(mapa);
+	public ResponseEntity<?> updateProduct(@PathVariable int id, @Valid @RequestBody ProductDTO dto,  @RequestHeader("Authorization") String token) throws Exception{
 		Product product=null;
-		Worker w=null; 
 		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.registerModule(new JavaTimeModule());
-	        w= objectMapper.convertValue(mapa.get("worker"), Worker.class);
-			//w=(Worker) mapa.get("worker");
 			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(w.getUsername())) {
+	        if (username == null) 
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	        }
-	        product= objectMapper.convertValue(mapa.get("product"), Product.class);
-			//product= (Product) mapa.get("product");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 		
-		
+        product= productConverter.toEntity(dto);
 		product.setId(id);
 		Product p=null;
-		try {
-			p = service.updateProduct(product);
-		} catch (Exception e) {
-			p=null;
-			e.printStackTrace();
-		}
-		if(p==null)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		else
-			return  new ResponseEntity<>(p, HttpStatus.OK);
+		p = service.updateProduct(product);
+		ProductDTO retDto=productConverter.toDto(p);
+		
+		return  new ResponseEntity<>(retDto, HttpStatus.OK);
 	}
 
 	//worker    da
 	@DeleteMapping("/{id}") 
-	public ResponseEntity<?> deleteProduct(@PathVariable int id, @RequestBody Worker w, @RequestHeader("Authorization") String token){
-		System.out.println("rad:"+w);
+	public ResponseEntity<?> deleteProduct(@PathVariable int id, @RequestHeader("Authorization") String token) throws Exception{
 		try {
 			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(w.getUsername())) {
+	        if (username == null) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 		} catch (Exception e) {
@@ -144,7 +131,7 @@ public class ProductController {
 		
 		Product p=service.getProduct(id);
 		if(p==null)
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new Exception("Product does not exist");
 		else {
 			service.deleteProduct(id);
 			return  new ResponseEntity<>(HttpStatus.OK);
@@ -153,7 +140,7 @@ public class ProductController {
 	
 		//da
 	@GetMapping("/search")  //http://localhost:8080/api/products/search?keyword=ef
-	public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword){
+	public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) throws Exception{
 		List<Product> l=service.searchProducts(keyword);
 		if(l==null)
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);

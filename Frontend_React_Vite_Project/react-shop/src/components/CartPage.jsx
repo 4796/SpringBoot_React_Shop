@@ -106,8 +106,8 @@ export default function CartPage() {
               <img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-md" />
               <h2 className="text-lg font-bold mt-2" style={{color: 'blue'}}>{product.name || "No name available"}</h2>
               <p className="text-gray-600">${product.price}</p>
-              <p className={`text-sm ${product.aveilable ? 'text-green-600' : 'text-red-600'}`}>
-        {product.aveilable ? 'Aveilable' : 'Out of Stock'}
+              <p className={`text-sm ${product.available ? 'text-green-600' : 'text-red-600'}`}>
+        {product.available ? 'Available' : 'Out of Stock'}
       </p>
               <button
                 onClick={() => handleBuy(product.id)}

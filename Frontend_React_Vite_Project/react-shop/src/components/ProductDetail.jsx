@@ -46,7 +46,7 @@ export default function ProductDetail() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/products/${id}/addtocart`,
+        `http://localhost:8080/order/${id}/addtocart`,
         { username: sessionStorage.getItem("username") },
         { headers: { Authorization: `${token}` } }
       );
@@ -54,6 +54,9 @@ export default function ProductDetail() {
       setAlertMessage("Product successfully added to cart!");
       setAlertType("success");
       setShowAlert(true);
+
+      window.location.reload(); 
+
     } catch (error) {
       console.error("Error adding to cart:", error.response?.data || error.message);
       setAlertMessage("Failed to add to cart!");
@@ -121,12 +124,12 @@ export default function ProductDetail() {
                       </span>
                       <span
                         className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          product.aveilable
+                          product.available
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {product.aveilable ? "In Stock" : "Out of Stock"}
+                        {product.available ? "In Stock" : "Out of Stock"}
                       </span>
                     </div>
 
@@ -139,15 +142,15 @@ export default function ProductDetail() {
 
                 <button
                   onClick={handleAddToCart}
-                  disabled={!product.aveilable}
+                  disabled={!product.available}
                   className={`mt-8 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-colors ${
-                    product.aveilable
+                    product.available
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-gray-400 cursor-not-allowed"
                   }`}
                 >
                   <span className="mr-2">🛒</span>
-                  {product.aveilable ? "Add to Cart" : "Out of Stock"}
+                  {product.available ? "Add to Cart" : "Out of Stock"}
                 </button>
               </div>
             </div>

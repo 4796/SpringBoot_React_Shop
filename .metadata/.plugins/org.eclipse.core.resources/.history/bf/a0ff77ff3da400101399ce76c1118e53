@@ -1,0 +1,30 @@
+package com.example.Shop.dto;
+
+import java.util.Date;
+import java.util.List;
+
+import org.antlr.v4.runtime.misc.NotNull;
+
+import com.example.Shop.model.Currency;
+import com.example.Shop.model.Product;
+
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
+
+public class WorkerDTO implements DTO{
+	
+	@NotNull(message = "Number is required...")
+	private String username;
+	private String password;
+	private String name;//novo
+	private String city;//novo
+	private String phone_number;//novo
+	
+    private String token; 
+    
+    double pay;
+	Date date_of_employment;//nov
+  	
+  	List<Product> productsInCart;
+}

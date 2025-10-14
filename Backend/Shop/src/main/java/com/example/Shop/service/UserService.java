@@ -26,7 +26,7 @@ public class UserService {
 	@Autowired
 	private ProductRepo productRepo;
 
-	public User logIn(User u) {
+	public User logIn(User u) throws Exception {
 		
 		User found=null;
 		try {
@@ -62,24 +62,28 @@ public class UserService {
 		
 		
 		
-
+		if(found==null)
+			throw new Exception("Wrong input for username and password.");
 		return found;
 	}
 
 	@Transactional
-	public Client register(Client client) {
-		if (clientRepo.existsById(client.getUsername()))
-			return null;
+	public Client register(Client client) throws Exception {
+		if (clientRepo.existsById(client.getUsername()) || workerRepo.existsById(client.getUsername()))
+			throw new Exception("Username taken");
 		return clientRepo.save(client);
 	}
 
 	//in_cart nije entitet za sebe nego je vezan za kupca
 	@Transactional
-	public Client addToCart(int id, Client client) {
+	public Client addToCart(int id, String username)  throws Exception{
 		try {
 			//provera da li postoje i proizvod i kupac
 			Product p=productRepo.findById(id).orElseThrow();
-			client=clientRepo.findById(client.getUsername()).orElseThrow();
+			if(!p.isAvailable())
+				throw new Exception("Out of stock");
+				
+			Client client=clientRepo.findById(username).orElseThrow();
 			
 			client.getProductsInCart().add(p);
 			Client c=clientRepo.save(client);
@@ -93,54 +97,41 @@ public class UserService {
 
 	
 	@Transactional
-	public Worker addWorker(Worker worker) {
+	public Worker addWorker(Worker worker) throws Exception {
 		try {
-			if(worker.getUsername().length()<3 || worker.getPassword().length()<3) {
-		//previse jednostavno
-					Worker r= new Worker();
-					r.setUsername("-1");
-					return r;
-				
-			}
-				
-			Worker w=workerRepo.findById(worker.getUsername()).orElse(null);
-			if(w!=null) { //vec postoji
-				Worker r= new Worker();
-				r.setUsername("0");
-				return r;
+			User w=workerRepo.findById(worker.getUsername()).orElse(null);
+			Client c=null;
+			if(w==null)
+				c=clientRepo.findById(worker.getUsername()).orElse(null);
+			if(w!=null || c!=null) { //vec postoji
+				throw new Exception("username taken");
 			}
 			return workerRepo.save(worker);
 				
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			throw e;
 		}
 		
 		
 	}
 
 	@Transactional
-	public Worker updateWorker(Worker worker) {
+	public Worker updateWorker(Worker worker) throws Exception {
 		try {
-			if(worker.getUsername().length()<3 || worker.getPassword().length()<3) {
-		//previse jednostavno
-					Worker r= new Worker();
-					r.setUsername("-1");
-					return r;
-				
-			}
-				
+			if(worker.getPassword()==null || worker.getPassword().length()<1)
+				worker.setPassword(workerRepo.findById(worker.getUsername()).get().getPassword());
 			return workerRepo.save(worker);
 				
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
+			throw e;
 		}
 		
 	}
 
 	@Transactional
-	public String deleteWorker(String worker) {
+	public String deleteWorker(String worker)  throws Exception{
 		try {
 			workerRepo.deleteById(worker);
 			return worker;
@@ -150,7 +141,7 @@ public class UserService {
 		}
 	}
 
-	public List<Worker> workerList() {
+	public List<Worker> workerList()  throws Exception{
 		try {
 			return workerRepo.findAll();
 		} catch (Exception e) {

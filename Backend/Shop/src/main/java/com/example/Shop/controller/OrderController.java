@@ -11,11 +11,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Shop.converter.impl.ClientConverterDtoEntity;
+import com.example.Shop.converter.impl.OrderConverterDtoEntity;
+import com.example.Shop.converter.impl.ProductConverterDtoEntity;
+import com.example.Shop.dto.ClientDTO;
+import com.example.Shop.dto.OrderDTO;
+import com.example.Shop.dto.ProductDTO;
 import com.example.Shop.model.Client;
 import com.example.Shop.model.Order;
 import com.example.Shop.service.AuthService;
 import com.example.Shop.service.OrderService;
 import com.example.Shop.service.UserService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -32,37 +40,41 @@ public class OrderController {
 	@Autowired
 	OrderService orderService;
 	
+	@Autowired
+	ClientConverterDtoEntity clientConverter;
+	
+	@Autowired
+	OrderConverterDtoEntity orderConverter;
+	
 	
 	//da
 		@PostMapping("/{id}/addtocart") 
-		public ResponseEntity<?> addToCart(@PathVariable int id, @RequestBody Client client, @RequestHeader("Authorization") String token){
+		public ResponseEntity<?> addToCart(@PathVariable int id, @RequestHeader("Authorization") String token) throws Exception{
 			String username = authService.validateTokenAndGetUser(token); // Proverava token
-	        if (username == null || !username.equals(client.getUsername())) {
+	        if (username == null) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Ako je token nevalidan, vraća 401 Unauthorized
 	        }
 	        
 			
-			Client c=userService.addToCart(id, client);
-			if(c==null)
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			else
-				return  new ResponseEntity<>(c, HttpStatus.OK);
+			Client c=userService.addToCart(id, username);
+			
+			ClientDTO retC=clientConverter.toDto(c);
+			return  new ResponseEntity<>(retC, HttpStatus.OK);
 		}
 		
 		
 		//da
 		@PostMapping("/{id}/buy")
-		public ResponseEntity<Order> buy(@RequestBody Order order, @RequestHeader("Authorization") String token) {
+		public ResponseEntity<?> buy(@Valid @RequestBody OrderDTO dto, @RequestHeader("Authorization") String token) throws Exception{
 			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(order.getClient().getUsername())) {
+	        if (username == null || !username.equals(dto.getClient().getUsername())) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
 	        }
 			
-			Order o=orderService.buy(order);
-			if(o==null)
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			else
-				return  new ResponseEntity<>(o, HttpStatus.OK);
+			Order o=orderConverter.toEntity(dto);
+			o=orderService.buy(o);
+			OrderDTO retO=orderConverter.toDto(o);
 			
+			return  new ResponseEntity<>(retO, HttpStatus.OK);
 		}
 }

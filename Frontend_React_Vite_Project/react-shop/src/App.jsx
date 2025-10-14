@@ -9,12 +9,12 @@ import CartPage from './components/CartPage.jsx'
 import ProductDetail from "./components/ProductDetail.jsx";
 import RegisterPage from "./components/RegisterPage.jsx";
 import WorkersPage from './components/WorkersPage.jsx'
-import WProductsPage from './components/WorkerProductsPAge.jsx';
+import WProductsPage from './components/WorkerProductsPage.jsx';
 import UpdateAccountPage from './components/UpdateAccountPage.jsx';
 import AdminPage from './components/AdminPage.jsx';
 
-function App() {
-    return(
+function App() {    //Koristi Router da bi se za odgovarajuci url prikazala odgovarajuca komponenta
+    return(         //a svaka komponenta odgovara po jednoj stranici
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />

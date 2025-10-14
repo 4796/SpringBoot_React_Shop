@@ -9,9 +9,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Shop.converter.impl.ClientConverterDtoEntity;
+import com.example.Shop.dto.ClientDTO;
+import com.example.Shop.dto.DTO;
+import com.example.Shop.dto.UserDTO;
 import com.example.Shop.model.Client;
 import com.example.Shop.model.User;
 import com.example.Shop.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @CrossOrigin
@@ -21,14 +27,15 @@ public class ClientController {
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	ClientConverterDtoEntity clientConverter;
+	
 	//new client
 		//client     da
 		@PostMapping("/register")
-		public ResponseEntity<User> register(@RequestBody Client client){
-			Client c=userService.register(client);
-			if(c==null)
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			else
-				return  new ResponseEntity<>(HttpStatus.OK);
+		public ResponseEntity<DTO> register(@Valid @RequestBody ClientDTO dto) throws Exception{
+			Client c=clientConverter.toEntity(dto);
+			c=userService.register(c);
+			return  new ResponseEntity<>(HttpStatus.OK);
 		}
 }

@@ -1,0 +1,30 @@
+package com.example.Shop.exHandler;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class ExceptionHandler {
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
+	    Map<String, String> response = new HashMap<>();
+	    
+	    String firstErrorMessage = ex.getBindingResult()
+	        .getFieldErrors()
+	        .stream()
+	        .findFirst()
+	        .map(FieldError::getDefaultMessage)
+	        .orElse("Validation failed");
+
+	    response.put("message", firstErrorMessage);
+	    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+}

@@ -1,0 +1,29 @@
+package com.example.Shop.dto;
+
+import java.util.List;
+
+import com.example.Shop.model.Currency;
+import com.example.Shop.model.Product;
+
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
+
+public class WorkerDTO implements DTO{
+	
+
+	private String username;
+	private String password;
+	private String name;//novo
+	private String city;//novo
+	private String phone_number;//novo
+	
+    private String token; 
+    
+  //sva tri nova
+  	private String country;
+  	private String postal_code;
+  	private Currency currency;
+  	
+  	List<Product> productsInCart;
+}

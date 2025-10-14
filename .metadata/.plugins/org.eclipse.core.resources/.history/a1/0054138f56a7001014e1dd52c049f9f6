@@ -1,0 +1,28 @@
+package com.example.Shop.converter.impl;
+
+import com.example.Shop.converter.ConverterDtoEntity;
+import com.example.Shop.dto.ClientDTO;
+import com.example.Shop.dto.ProductDTO;
+import com.example.Shop.model.Client;
+import com.example.Shop.model.Product;
+
+public class ProductConverterDtoEntity implements ConverterDtoEntity<ProductDTO, Product> {
+
+	@Override
+	public ProductDTO toDto(Product e) {
+		return new ProductDTO(e.getId(), e.getName(), e.getPrice(), e.getDescription(), e.getBrand(), e.getCategory(), null, false, e.getQuantity(), e.getImage());
+	}
+
+	@Override
+	public Product toEntity(ProductDTO dto) {
+		Client client=new Client(dto.getCountry(), dto.getPostal_code(), dto.getCurrency(), dto.getProductsInCart());
+		client.setUsername(dto.getUsername());
+		client.setPassword(dto.getPassword());
+		client.setName(dto.getName());
+		client.setCity(dto.getCity());
+		client.setPhone_number(dto.getPhone_number());
+		client.setToken(dto.getToken());
+		return client;
+	}
+
+}

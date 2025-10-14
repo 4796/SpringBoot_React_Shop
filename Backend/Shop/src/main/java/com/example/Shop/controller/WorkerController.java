@@ -16,10 +16,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Shop.converter.impl.ClientConverterDtoEntity;
+import com.example.Shop.converter.impl.WorkerConverterDtoEntity;
+import com.example.Shop.dto.ClientDTO;
+import com.example.Shop.dto.WorkerDTO;
 import com.example.Shop.model.Worker;
 import com.example.Shop.service.AuthService;
 import com.example.Shop.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -32,19 +38,20 @@ public class WorkerController {
 	@Autowired
 	AuthService authService;
 	
+	@Autowired
+	ClientConverterDtoEntity clientConverter;
+	@Autowired
+	WorkerConverterDtoEntity workerConverter;
+	
 	
 	//worker   da
 		@PostMapping("/add")
-		public ResponseEntity<?> newWorker(@RequestBody Map<String, Object> mapa, @RequestHeader("Authorization") String token){
-			String me="";
+		public ResponseEntity<?> newWorker(@Valid @RequestBody WorkerDTO dto, @RequestHeader("Authorization") String token) throws Exception{
 			Worker worker=null;
 			try {
-				me=mapa.get("username").toString();
-				ObjectMapper objectMapper = new ObjectMapper();
-		        worker = objectMapper.convertValue(mapa.get("newworker"), Worker.class);
-			//	worker=(Worker) mapa.get("newworker");
+				worker=workerConverter.toEntity(dto);
 				String username = authService.validateTokenAndGetUser(token); 
-		        if (username == null || !username.equals(me)) {
+		        if (username == null) {
 		        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		        }
 			} catch (Exception e) {
@@ -54,16 +61,9 @@ public class WorkerController {
 			
 			
 			Worker w=userService.addWorker(worker);
-			if(w==null)
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			else {
-				if(w.getUsername().equals("0")) //already exists, not created
-					return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-				if(w.getUsername().equals("-1")) //already exists, not created
-					return  new ResponseEntity<>(HttpStatus.PRECONDITION_FAILED);
-				else
-					return  new ResponseEntity<>(HttpStatus.CREATED);//success
-			}
+
+			return  new ResponseEntity<>(HttpStatus.CREATED);//success		
+			
 				
 		}
 		
@@ -71,28 +71,21 @@ public class WorkerController {
 		
 		//worker     da
 		@PutMapping("/update")//samog sebe moze da menja, da bi radilo ovo za autentifikaciju
-		public ResponseEntity<Worker> updateWorker(@RequestBody Worker worker, @RequestHeader("Authorization") String token){
+		public ResponseEntity<?> updateWorker(@Valid @RequestBody WorkerDTO dto, @RequestHeader("Authorization") String token) throws Exception{
 			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(worker.getUsername())) {
+	        if (username == null || !username.equals(dto.getUsername())) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
 	        }
 	        
-	        
+	        Worker worker=workerConverter.toEntity(dto);
 			Worker w=userService.updateWorker(worker);
-			if(w==null)
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			else {
-				if(w.getUsername().equals("-1")) //already exists, not created
-					return  new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-				else
-					return  new ResponseEntity<>(w, HttpStatus.CREATED);//success
-			}
-				
+			
+			return  new ResponseEntity<>(w, HttpStatus.CREATED);//success
 		}
 		
 		//worker
 		@DeleteMapping("/delete")//samog sebe moze da menja, da bi radilo ovo za autentifikaciju
-		public ResponseEntity<?> deleteWorker(@RequestBody String worker, @RequestHeader("Authorization") String token){
+		public ResponseEntity<?> deleteWorker(@RequestBody String worker, @RequestHeader("Authorization") String token) throws Exception{
 			worker=worker.substring(1, worker.length()-1);
 			String username = authService.validateTokenAndGetUser(token); 
 	        if (username == null || !username.equals(worker)) {
@@ -108,7 +101,7 @@ public class WorkerController {
 		
 		//worker     da
 		@GetMapping("/all")
-		public ResponseEntity<?> workerList(@RequestHeader("Authorization") String token){
+		public ResponseEntity<?> workerList(@RequestHeader("Authorization") String token) throws Exception{
 			String username = authService.validateTokenAndGetUser(token); 
 	        if (username == null) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
