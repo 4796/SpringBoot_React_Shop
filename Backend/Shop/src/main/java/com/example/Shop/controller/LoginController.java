@@ -55,12 +55,18 @@ public class LoginController {
 	public ResponseEntity<DTO> login(@Valid @RequestBody UserDTO dto) throws Exception {
 		User u=userConverter.toEntity(dto);
 		u=userService.logIn(u);
-			String token = authService.generateToken(u.getUsername());
-			u.setToken(token);
+		String token;
+			
 			DTO responseDto;
 			try {
 				responseDto = clientConverter.toDto((Client)u);
+				token = authService.generateToken(u.getUsername(), "c");
+				u.setToken(token);
+				responseDto = clientConverter.toDto((Client)u);
 			} catch (Exception e) {
+				responseDto = workerConverter.toDto((Worker)u);
+				token = authService.generateToken(u.getUsername(), "w");
+				u.setToken(token);
 				responseDto = workerConverter.toDto((Worker)u);
 			}
 			

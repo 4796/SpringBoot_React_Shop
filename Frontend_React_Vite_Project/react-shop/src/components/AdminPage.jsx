@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const AdminPage = () => {
-  const [workers, setWorkers] = useState([]);
+  const [workers, setWorkers] = useState([]);//workers se postavlja kao prazna lista
   const [newWorker, setNewWorker] = useState({
     username: '',
     password: '',
@@ -9,21 +9,20 @@ const AdminPage = () => {
     city: '',
     phone_number: '',
     pay: ''
-  });
-  const [error, setError] = useState('');
+  });//postavljaju se prazni stringovi za sve vrednosti koje ima novi radnik
+  const [error, setError] = useState('');//ako je ostala neka greska od ranije to se uklanja
   
-  const username = sessionStorage.getItem('username');
-  const url = new URL('http://localhost:8080/worker/all');
+  const username = sessionStorage.getItem('username');//cita se iz memorije da bi se lakse koristilo
+  const url = new URL('http://localhost:8080/worker');//koristice se vise puta
 
   useEffect(() => {
     fetchWorkers();
   }, []);
 
-  const fetchWorkers = async () => {
+  const fetchWorkers = async () => {//izima se lista radnika
     try {
       const token = sessionStorage.getItem('token');
-      if (username) url.searchParams.set('username1', username);
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url.toString()+'/all', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +45,7 @@ const AdminPage = () => {
     
     try {
       const token = sessionStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/worker/add', {
+      const response = await fetch(url.toString()+'/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -50,8 +50,10 @@ public class OrderController {
 	//da
 		@PostMapping("/{id}/addtocart") 
 		public ResponseEntity<?> addToCart(@PathVariable int id, @RequestHeader("Authorization") String token) throws Exception{
-			String username = authService.validateTokenAndGetUser(token); // Proverava token
-	        if (username == null) {
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1];
+			if (username == null || !role.equals("c")) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Ako je token nevalidan, vraća 401 Unauthorized
 	        }
 	        
@@ -66,8 +68,10 @@ public class OrderController {
 		//da
 		@PostMapping("/{id}/buy")
 		public ResponseEntity<?> buy(@Valid @RequestBody OrderDTO dto, @RequestHeader("Authorization") String token) throws Exception{
-			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(dto.getClient().getUsername())) {
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1];
+	        if (username == null || !username.equals(dto.getClient().getUsername()) || !role.equals("c")) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
 	        }
 			

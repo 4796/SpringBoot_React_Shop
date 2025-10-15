@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 	private HashMap<String, String> tokenStorage = new HashMap<>(); 
 
-    public String generateToken(String username) throws Exception{
+    public String generateToken(String username, String role) throws Exception{
         String token = UUID.randomUUID().toString(); 
-        tokenStorage.put(token, username); 
+        tokenStorage.put(token, username+","+role); 
         return token;
     }
 
-    public String validateTokenAndGetUser(String token) throws Exception{
+    public String validateTokenAndGetUsernameAndRole(String token) throws Exception{
         return tokenStorage.get(token); 
     }
 }

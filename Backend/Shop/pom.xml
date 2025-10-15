@@ -107,7 +107,7 @@
             </executions>
         </plugin>
 
-        <!-- Maven Compiler Plugin (za Lombok) -->
+     
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>

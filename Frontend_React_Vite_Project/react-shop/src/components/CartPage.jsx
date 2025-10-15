@@ -13,10 +13,10 @@ export default function CartPage() {
             return [];   
           }
           const parsedCart = JSON.parse(savedCart);
-          // Dodajemo UUID svakom proizvodu koji ga još nema
+          // Dodajemo id svakom proizvodu, jer proizvod u korpi nije jedinstven
           return parsedCart.map(product => ({
             ...product,
-            uuid: product.uuid || uuidv4() // Generišemo UUID ako ne postoji
+            uuid: product.uuid || uuidv4() // Generišemo UUID
           }));
         }
         return [];

@@ -50,8 +50,10 @@ public class WorkerController {
 			Worker worker=null;
 			try {
 				worker=workerConverter.toEntity(dto);
-				String username = authService.validateTokenAndGetUser(token); 
-		        if (username == null) {
+				String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+				String username=usernameAndRole.split(",")[0];
+				String role=usernameAndRole.split(",")[1]; 
+		        if (username == null || !role.equals("w")) {
 		        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		        }
 			} catch (Exception e) {
@@ -72,8 +74,10 @@ public class WorkerController {
 		//worker     da
 		@PutMapping("/update")//samog sebe moze da menja, da bi radilo ovo za autentifikaciju
 		public ResponseEntity<?> updateWorker(@Valid @RequestBody WorkerDTO dto, @RequestHeader("Authorization") String token) throws Exception{
-			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null || !username.equals(dto.getUsername())) {
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1]; 
+	        if (username == null || !username.equals(dto.getUsername())|| !role.equals("w")) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
 	        }
 	        
@@ -87,7 +91,8 @@ public class WorkerController {
 		@DeleteMapping("/delete")//samog sebe moze da menja, da bi radilo ovo za autentifikaciju
 		public ResponseEntity<?> deleteWorker(@RequestBody String worker, @RequestHeader("Authorization") String token) throws Exception{
 			worker=worker.substring(1, worker.length()-1);
-			String username = authService.validateTokenAndGetUser(token); 
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0]; 
 	        if (username == null || !username.equals(worker)) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
 	        }
@@ -102,9 +107,11 @@ public class WorkerController {
 		//worker     da
 		@GetMapping("/all")
 		public ResponseEntity<?> workerList(@RequestHeader("Authorization") String token) throws Exception{
-			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null) {
-	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1]; 
+	        if (username == null || !role.equals("w")) {
+	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 	        
 			List<Worker> l=userService.workerList();

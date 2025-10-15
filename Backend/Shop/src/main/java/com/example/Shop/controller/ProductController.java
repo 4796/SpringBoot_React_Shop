@@ -79,8 +79,10 @@ public class ProductController {
 	public ResponseEntity<?> addProduct(@Valid @RequestBody ProductDTO dto,  @RequestHeader("Authorization") String token) throws Exception{
 		Product product=null;
 		try {
-			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null) {
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1];
+	        if (username == null || !role.equals("w")) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 		} catch (Exception e) {
@@ -99,8 +101,10 @@ public class ProductController {
 	public ResponseEntity<?> updateProduct(@PathVariable int id, @Valid @RequestBody ProductDTO dto,  @RequestHeader("Authorization") String token) throws Exception{
 		Product product=null;
 		try {
-			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null) 
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1];
+	        if (username == null || !role.equals("w")) 
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -120,8 +124,10 @@ public class ProductController {
 	@DeleteMapping("/{id}") 
 	public ResponseEntity<?> deleteProduct(@PathVariable int id, @RequestHeader("Authorization") String token) throws Exception{
 		try {
-			String username = authService.validateTokenAndGetUser(token); 
-	        if (username == null) {
+			String usernameAndRole = authService.validateTokenAndGetUsernameAndRole(token); // Proverava token
+			String username=usernameAndRole.split(",")[0];
+			String role=usernameAndRole.split(",")[1]; 
+	        if (username == null || !role.equals("w")) {
 	        	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	        }
 		} catch (Exception e) {
